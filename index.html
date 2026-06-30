@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Persuasive Writing Helper - Generic Paragraph Scaffold</title>
+<style>
+  :root{
+    --yellow:#fff200;
+    --green:#8db300;
+    --red:#ff1000;
+    --blue:#14aee4;
+    --purple:#7430a3;
+    --pink:#f35abf;
+    --grey:#c9c9c9;
+    --dark:#111827;
+    --light:#f3f4f6;
+  }
+  *{box-sizing:border-box;}
+  body{font-family:Arial, Helvetica, sans-serif;background:#eef2f7;margin:0;padding:18px;color:#111827;}
+  .page{max-width:1180px;margin:0 auto;}
+  .hero{background:white;border-radius:14px;padding:18px;margin-bottom:18px;box-shadow:0 3px 12px rgba(0,0,0,.08);border:1px solid #d1d5db;}
+  h1{margin:0 0 8px;font-size:34px;}
+  h2{margin:0;font-size:28px;}
+  h3{margin:0 0 8px;font-size:22px;}
+  .teacher-note{font-size:15px;color:#374151;margin:0 0 14px;line-height:1.45;}
+  .setup-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  .setup-card{background:#f9fafb;border:1px solid #d1d5db;border-radius:10px;padding:12px;}
+  label{display:block;font-weight:800;margin-bottom:5px;}
+  input, textarea{width:100%;font-family:Arial, Helvetica, sans-serif;font-size:18px;border:2px solid #d1d5db;border-radius:8px;padding:9px;background:white;}
+  textarea{min-height:72px;resize:vertical;line-height:1.35;}
+  .top-prompt-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:stretch;}
+  .prompt-summary{background:#111827;color:white;border-radius:12px;padding:16px;margin-top:0;font-size:19px;line-height:1.45;height:100%;}
+  .prompt-summary .main-prompt{font-size:25px;font-weight:900;margin-bottom:10px;}
+  .prompt-summary .position-line{font-size:22px;font-weight:800;margin-bottom:8px;}
+  .prompt-summary .summary-title{color:#fff200;font-weight:900;}
+  .prompt-summary strong{color:#fff200;}
+  .prompt-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:10px;}
+  .prompt-chip{background:#374151;border-radius:8px;padding:10px;line-height:1.3;}
+  .editable-prompt{margin-top:0;}
+  .editable-prompt .edit-title{font-size:22px;font-weight:900;color:#fff200;margin-bottom:10px;}
+  .editable-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px;}
+  .editable-field label{color:#fff200;font-size:15px;margin-bottom:4px;}
+  .editable-field input,.editable-field textarea{background:#1f2937;color:white;border:2px solid #4b5563;font-size:17px;}
+  .editable-field textarea{min-height:64px;}
+  .editable-field input::placeholder,.editable-field textarea::placeholder{color:#9ca3af;}
+  .mini-checklist{display:grid;grid-template-columns:repeat(2,minmax(150px,1fr));gap:8px;margin:8px 0 10px;}
+  .mini-check{display:flex;align-items:center;gap:6px;background:#fef9c3;border:2px solid #facc15;border-radius:8px;padding:7px 8px;font-weight:800;font-size:14px;color:#854d0e;}
+  .mini-check.ok{background:#dcfce7;border-color:#22c55e;color:#166534;}
+  .mini-check .symbol{width:22px;height:22px;display:inline-flex;align-items:center;justify-content:center;border-radius:50%;background:#facc15;color:#854d0e;font-weight:900;}
+  .mini-check.ok .symbol{background:#22c55e;color:white;}
+  .toolbar{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;}
+  button{border:none;border-radius:8px;padding:9px 13px;font-size:15px;font-weight:800;cursor:pointer;background:#2563eb;color:white;}
+  button.secondary{background:#4b5563;}
+  button.green{background:#16a34a;}
+  button.red{background:#dc2626;}
+  button.purple{background:#7c3aed;}
+  button.orange{background:#f97316;}
+  button:disabled{background:#9ca3af;cursor:not-allowed;}
+  .paragraph{background:white;border-radius:14px;margin-bottom:18px;box-shadow:0 3px 12px rgba(0,0,0,.08);border:1px solid #d1d5db;overflow:hidden;}
+  .para-head{display:grid;grid-template-columns:330px 1fr;min-height:92px;}
+  .para-num{background:white;padding:18px 22px;font-size:48px;font-weight:900;font-style:italic;letter-spacing:-1px;}
+  .para-title{background:var(--grey);padding:18px 22px;text-align:center;font-size:38px;font-weight:900;display:flex;align-items:center;justify-content:center;}
+  .para-body{display:grid;grid-template-columns:370px 1fr;gap:14px;padding:14px;}
+  .wagll{background:#0a0a0a;color:var(--yellow);border-radius:4px;padding:14px;font-size:22px;line-height:1.22;align-self:start;}
+  .wagll-title{text-align:center;font-size:20px;color:#111827;background:white;margin:0 0 10px;padding:3px;font-style:normal;}
+  .wagll p{margin:0 0 10px;}
+  .wagll .green-text{color:#a7f05a;}
+  .wagll .red-text{color:#ff1616;font-weight:900;}
+  .wagll .blue-text{color:#03c7ff;}
+  .wagll .purple-text{color:#b35cff;}
+  .wagll .pink-text{color:#ff4ec6;}
+  .scaffold{display:flex;flex-direction:column;gap:10px;}
+  .sentence-card{border-radius:0;border:1px solid #e5e7eb;padding:10px;}
+  .s-yellow{background:var(--yellow);}
+  .s-green{background:var(--green);}
+  .s-red{background:var(--red);}
+  .s-blue{background:var(--blue);}
+  .s-purple{background:var(--purple);color:black;}
+  .s-pink{background:var(--pink);}
+  .sentence-card h4{margin:0 0 6px;font-size:27px;line-height:1.15;}
+  .sentence-card .hint{font-size:20px;font-weight:500;line-height:1.25;margin-bottom:8px;}
+  .sentence-card .word-bank{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 8px;}
+  .word{background:rgba(255,255,255,.72);border:1px solid rgba(0,0,0,.12);padding:5px 8px;border-radius:6px;font-size:15px;font-weight:700;}
+  .student-box{background:white;border-radius:8px;padding:10px;border:2px solid rgba(0,0,0,.16);}
+  .student-box textarea{font-size:18px;min-height:72px;border:2px solid #9ca3af;}
+  .fb{background:#f9fafb;border:1px solid #d1d5db;border-radius:8px;padding:8px 10px;margin-top:8px;font-size:15px;line-height:1.35;display:none;}
+  .fb ul{margin:4px 0 0 18px;padding:0;}
+  .checklist{background:#f9fafb;border:2px solid #d1d5db;border-radius:10px;padding:10px;margin-top:10px;}
+  .checklist-title{font-weight:900;font-size:17px;margin-bottom:8px;}
+  .check-grid{display:grid;grid-template-columns:repeat(2, minmax(210px,1fr));gap:7px;}
+  .check-item{background:white;border:2px solid #cbd5e1;border-radius:8px;padding:7px 9px;font-size:15px;font-weight:800;display:flex;align-items:center;gap:7px;}
+  .check-item .box{width:20px;height:20px;border:2px solid #94a3b8;border-radius:5px;display:inline-flex;align-items:center;justify-content:center;font-weight:900;color:white;flex:0 0 auto;}
+  .check-item.ok{background:#dcfce7;border-color:#22c55e;color:#14532d;}
+  .check-item.ok .box{background:#22c55e;border-color:#16a34a;}
+  .sentence-reminder{background:#fff7ed;border:2px solid #fb923c;border-radius:10px;padding:9px;margin-top:9px;font-size:15px;line-height:1.35;font-weight:700;}
+  .preview-reminder{background:#fff7ed;border:2px solid #fb923c;border-radius:10px;padding:12px;margin:10px 0 12px;font-size:16px;line-height:1.4;font-weight:700;}
+  .mini-buttons{display:flex;gap:7px;flex-wrap:wrap;margin-top:8px;}
+  .full-section{background:white;border-radius:14px;padding:18px;margin-bottom:26px;box-shadow:0 3px 12px rgba(0,0,0,.08);border:1px solid #d1d5db;}
+  .full-preview{white-space:pre-wrap;background:#f9fafb;border:2px solid #d1d5db;border-radius:10px;min-height:230px;padding:14px;font-size:18px;line-height:1.6;max-width:100%;overflow:auto;overflow-wrap:anywhere;word-break:break-word;}
+  .copied{background:#dcfce7;border:1px solid #86efac;color:#166534;border-radius:8px;padding:8px;margin-top:8px;display:none;font-weight:800;}
+  @media(max-width:900px){.setup-grid,.top-prompt-grid,.prompt-grid,.editable-grid,.para-head,.para-body{grid-template-columns:1fr;}.para-title{font-size:30px}.para-num{font-size:38px}.wagll{font-size:19px}.mini-checklist{grid-template-columns:1fr}}
+  @media print{body{background:white;padding:0}.hero,.paragraph{box-shadow:none;page-break-inside:avoid}.toolbar,.mini-buttons,.fb,.student-box label{display:none!important}.full-section{box-shadow:none}.paragraph{display:none}.hero{display:none}.full-preview{border:none;background:white;font-size:16pt}}
+</style>
+</head>
+<body>
+<div class="page">
+  <section class="hero">
+    <div class="top-prompt-grid">
+      <div class="prompt-summary" id="promptSummary"></div>
+
+      <div class="prompt-summary editable-prompt" id="teacherEditablePrompt">
+      <div class="edit-title">Blank Teacher Prompt Box</div>
+      <div class="editable-grid">
+        <div class="editable-field">
+          <label for="teacherTopic">Today&apos;s writing prompt</label>
+          <input id="teacherTopic" placeholder="Type the new prompt here" oninput="updateAll()">
+        </div>
+        <div class="editable-field">
+          <label for="teacherTitle">Title / Position</label>
+          <input id="teacherTitle" placeholder="Type the title or position here" oninput="updateAll()">
+        </div>
+        <div class="editable-field">
+          <label for="teacherArg1">Argument 1</label>
+          <textarea id="teacherArg1" placeholder="Type argument 1 here" oninput="updateAll()"></textarea>
+        </div>
+        <div class="editable-field">
+          <label for="teacherArg2">Argument 2</label>
+          <textarea id="teacherArg2" placeholder="Type argument 2 here" oninput="updateAll()"></textarea>
+        </div>
+        <div class="editable-field" style="grid-column:1 / -1;">
+          <label for="teacherArg3">Argument 3</label>
+          <textarea id="teacherArg3" placeholder="Type argument 3 here" oninput="updateAll()"></textarea>
+        </div>
+      </div>
+      </div>
+    </div>
+  </section>
+
+  <div id="paragraphs"></div>
+
+  <section class="full-section">
+    <h2>Final Copy Section - Full Persuasive Text</h2>
+    <p class="teacher-note">This joins the title and all completed paragraphs. Paragraph spacing is included so the copied text keeps a clear paragraph break between each section.</p>
+    <div class="toolbar">
+      <button class="green" onclick="copyFullText()">Copy full persuasive text with title</button>
+    </div>
+    <div class="copied" id="copiedMsg">Copied.</div>
+    <h3 style="margin-top:14px;">Live Preview</h3>
+    <div class="preview-reminder">
+      <strong>Before copying:</strong> check spacing after full stops and commas. Also check that sentences are not run-on sentences. If a sentence has too many ideas joined with <em>and</em>, split it into two sentences or use a clearer conjunction such as <em>because</em>, <em>so</em>, <em>but</em>, <em>although</em> or <em>however</em>.
+    </div>
+    <div class="full-preview" id="fullPreview"></div>
+  </section>
+</div>
+
+<script>
+const paragraphData = [
+  {
+    id:"p1", number:"Paragraph 1", title:"Statement of Position", type:"intro",
+    wagll:[
+      {text:"In zoos all around the world, animals are locked up in cages living a miserable existence.", cls:""},
+      {text:"You must absolutely agree that animals should be allowed to roam free.", cls:"green-text"},
+      {text:"Read on to discover why and you will understand.", cls:"red-text"}
+    ],
+    cards:[
+      {color:"s-yellow", title:"Sentence 1: Where, What", hint:"State where or who the issue affects, then state what your position is.", bank:["In schools...", "In our community...", "Around the world...", "Children...", "Animals...", "People..."], prompt:"Write Sentence 1: Where, What"},
+      {color:"s-green", title:"Sentence 2: You must", hint:"You must ________ ________ that...", bank:["certainly", "undoubtedly", "definitely", "undeniably", "absolutely", "agree", "believe", "concur", "accept", "recognise"], prompt:"Write Sentence 2: You must..."},
+      {color:"s-red", title:"Sentence 3: Read on to discover why...", hint:"Invite the reader to keep reading and understand your reasons.", bank:["Read on to discover why...", "Keep reading to understand...", "You will soon see why..."], prompt:"Write Sentence 3: Reader engagement"}
+    ]
+  },
+  {
+    id:"p2", number:"Paragraph 2", title:"Argument 1 - Teacher Models", type:"argument1",
+    wagll:[
+      {text:"Firstly, you must understand that animals are not meant to live in tiny, unnatural enclosures.", cls:""},
+      {text:"This is important because without the ability to hunt, play, and explore, these magnificent creatures become bored and unhealthy.", cls:"green-text"},
+      {text:"Imagine being locked in your bedroom for your entire life; how would that make you feel?", cls:"blue-text"}
+    ],
+    cards:[
+      {color:"s-yellow", title:"Sentence 1: Topic Sentence", hint:"Time connective (Firstly), you must understand/realise/recognise/appreciate that...", bank:["Firstly", "you must understand that", "you must realise that", "you must recognise that", "you must appreciate that"], prompt:"Write Sentence 1: Topic sentence for Argument 1"},
+      {color:"s-green", title:"Sentence 2: Importance", hint:"This is ________ because...", bank:["important", "significant", "critical", "fundamental"], prompt:"Write Sentence 2: Why this argument is important"},
+      {color:"s-blue", title:"Sentence 3: Rhetorical Question", hint:"Ask a question that makes the reader think but does not need an answer.", bank:["How would that make you feel?", "Would you want this to happen?", "Is this really fair?", "Who would want that?"], prompt:"Write Sentence 3: Rhetorical question"}
+    ]
+  },
+  {
+    id:"p3", number:"Paragraph 3", title:"Argument 2 - Teacher Models", type:"argument2",
+    wagll:[
+      {text:"Secondly, you must consider the mental health of these animals living in captivity.", cls:""},
+      {text:"This is important because animals that are stressed and bored can become sick, sad, and even aggressive.", cls:"green-text"},
+      {text:"It is a tragedy to see these animals suffering in plain sight for our entertainment.", cls:"purple-text"}
+    ],
+    cards:[
+      {color:"s-yellow", title:"Sentence 1: Topic Sentence", hint:"Time connective (Secondly), you must understand/realise/recognise/appreciate that...", bank:["Secondly", "you must consider that", "you must realise that", "you must recognise that", "you must appreciate that"], prompt:"Write Sentence 1: Topic sentence for Argument 2"},
+      {color:"s-green", title:"Sentence 2: Importance", hint:"This is ________ because...", bank:["important", "significant", "critical", "fundamental"], prompt:"Write Sentence 2: Why this argument is important"},
+      {color:"s-purple", title:"Sentence 3: Emotive / Inclusive / Exaggeration", hint:"Use strong feelings, together words, or exaggeration to persuade the reader.", bank:["tragedy", "misfortune", "disaster", "us", "we", "you", "our", "a million times", "out of this world", "take forever", "save our life", "change our life"], prompt:"Write Sentence 3: Emotive, inclusive or exaggeration sentence"}
+    ]
+  },
+  {
+    id:"p4", number:"Paragraph 4", title:"Argument 3 - Teacher Models", type:"argument3",
+    wagll:[
+      {text:"Thirdly, you must also consider that zoos do not teach people about animal behaviour.", cls:""},
+      {text:"This is important because seeing an animal behind glass does not show us its true behaviour.", cls:"green-text"},
+      {text:"For example, a recent study found that visitors who watched documentaries about wildlife in their natural homes learned more about animal behaviour than in a zoo.", cls:"pink-text"}
+    ],
+    cards:[
+      {color:"s-yellow", title:"Sentence 1: Topic Sentence", hint:"Time connective (Thirdly), you must understand/realise/recognise/appreciate that...", bank:["Thirdly", "you must also consider that", "you must understand that", "you must recognise that", "you must appreciate that"], prompt:"Write Sentence 1: Topic sentence for Argument 3"},
+      {color:"s-green", title:"Sentence 2: Importance", hint:"This is ________ because...", bank:["important", "significant", "critical", "fundamental"], prompt:"Write Sentence 2: Why this argument is important"},
+      {color:"s-pink", title:"Sentence 3: Show Evidence", hint:"Use an example, report, study, website, video or personal observation.", bank:["For example...", "A recent study...", "According to the website...", "Last year, my cousin...", "A video showed...", "According to a report I read...", "My friend and I witnessed..."], prompt:"Write Sentence 3: Evidence sentence"}
+    ]
+  },
+  {
+    id:"p5", number:"Paragraph 5", title:"Conclusion - Teacher Models", type:"conclusion",
+    wagll:[
+      {text:"For these reasons, we must act now to protect animals because they should not be locked up in cages.", cls:""},
+      {text:"Their survival depends on us, so together we can make a world with no zoos.", cls:"pink-text"}
+    ],
+    cards:[
+      {color:"s-yellow", title:"Sentence 1: Conclusion", hint:"For these reasons... / In conclusion... / This is why... / If we truly care... / Without our help... Repeat your initial position from Paragraph 1.", bank:["For these reasons", "In conclusion", "This is why", "If we truly care", "Without our help"], prompt:"Write Sentence 1: Restate your position"},
+      {color:"s-purple", title:"Sentence 2: Emotive / Inclusive / Exaggeration", hint:"Finish with strong persuasive language and make the reader feel responsible.", bank:["tragedy", "misfortune", "disaster", "us", "we", "you", "our", "a million times", "out of this world", "take forever", "save our life", "change our life", "together", "act now"], prompt:"Write Sentence 2: Strong final sentence"}
+    ]
+  }
+];
+
+const fixedPrompt = {
+  title: 'Zoos are or not safe for animals',
+  topic: 'Are Zoos safe for animal?',
+  position: 'Zoos are or not safe for animals',
+  arg1: 'Animals are not meant to live in tiny, unnatural enclosures.',
+  arg2: "Captivity can harm animals' mental health.",
+  arg3: 'Zoos do not always teach true animal behaviour.'
+};
+function editableText(id){const el=document.getElementById(id); return el ? el.value.trim() : '';}
+function safeText(id){
+  const map={topic:'teacherTopic',title:'teacherTitle',position:'teacherTitle',arg1:'teacherArg1',arg2:'teacherArg2',arg3:'teacherArg3'};
+  const custom=map[id] ? editableText(map[id]) : '';
+  return custom || fixedPrompt[id] || '';
+}
+function updateAll(){renderPromptSummary();updateFullPreview();updateAllChecklists();}
+function renderPromptSummary(){
+  document.getElementById('promptSummary').innerHTML = `
+    <div class="main-prompt"><span class="summary-title">Today&apos;s writing prompt:</span> ${escapeHtml(fixedPrompt.topic)}</div>
+    <div class="position-line"><span class="summary-title">Title / Position:</span> ${escapeHtml(fixedPrompt.position)}</div>
+    <div class="prompt-grid">
+      <div class="prompt-chip"><strong>Argument 1:</strong><br>${escapeHtml(fixedPrompt.arg1)}</div>
+      <div class="prompt-chip"><strong>Argument 2:</strong><br>${escapeHtml(fixedPrompt.arg2)}</div>
+      <div class="prompt-chip"><strong>Argument 3:</strong><br>${escapeHtml(fixedPrompt.arg3)}</div>
+    </div>`;
+}
+function escapeHtml(str){return String(str).replace(/[&<>'"]/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#039;','"':'&quot;'}[m]));}
+function renderParagraphs(){
+  const holder=document.getElementById('paragraphs');
+  holder.innerHTML='';
+  paragraphData.forEach((p)=>{
+    const section=document.createElement('section'); section.className='paragraph'; section.id=p.id;
+    const wagllHtml = p.wagll.map(w=>`<p class="${w.cls}">${escapeHtml(w.text)}</p>`).join('');
+    const cardsHtml = p.cards.map((c,si)=>`
+      <div class="sentence-card ${c.color}">
+        <h4>${escapeHtml(c.title)}</h4>
+        <div class="hint">${escapeHtml(c.hint)}</div>
+        <div class="word-bank">${c.bank.map(word=>`<span class="word">${escapeHtml(word)}</span>`).join('')}</div>
+        <div class="student-box">
+          <label for="${p.id}s${si}">${escapeHtml(c.prompt)}</label>
+          <textarea id="${p.id}s${si}" oninput="updateFullPreview(); updateSentenceChecklist('${p.id}', ${si})"></textarea>
+          <div class="mini-checklist" id="${p.id}s${si}Checks"></div>
+        </div>
+      </div>`).join('');
+    section.innerHTML = `
+      <div class="para-head"><div class="para-num">${escapeHtml(p.number)}</div><div class="para-title">${escapeHtml(p.title)}</div></div>
+      <div class="para-body">
+        <div>
+          <div class="wagll-title">WAGLL: What a Good One Looks Like</div>
+          <div class="wagll">${wagllHtml}</div>
+        </div>
+        <div class="scaffold">${cardsHtml}
+          <div class="sentence-reminder"><strong>Reminder:</strong> Avoid run-on sentences. Do not join too many ideas with <em>and</em>. Use a full stop, or choose a clearer conjunction such as <em>because</em>, <em>so</em>, <em>but</em>, <em>although</em> or <em>however</em>.</div>
+          <div class="mini-buttons">
+            <button class="secondary" onclick="readParagraph('${p.id}')">Read aloud</button>
+            <button class="red" onclick="resetParagraph('${p.id}')">Reset paragraph</button>
+          </div>
+          <div class="fb" id="${p.id}fb"></div>
+        </div>
+      </div>`;
+    holder.appendChild(section);
+  });
+}
+
+function updateSentenceChecklist(pid, si){
+  const p=paragraphData.find(x=>x.id===pid); if(!p)return;
+  const txt=(document.getElementById(pid+'s'+si)?.value || '').trim();
+  const starts=/^[A-Z]/.test(txt);
+  const needsQuestionMark=(pid==='p2' && si===2);
+  const ends=needsQuestionMark ? /\?$/.test(txt) : /\.$/.test(txt);
+  const box=document.getElementById(pid+'s'+si+'Checks'); if(!box)return;
+  const endLabel=needsQuestionMark ? 'Ends with question mark' : 'Ends with full stop';
+  const items=[
+    {ok:starts,label:'Starts with capital'},
+    {ok:ends,label:endLabel}
+  ];
+  box.innerHTML=items.map(item=>
+    '<div class="mini-check '+(item.ok?'ok':'')+'"><span class="symbol">'+(item.ok?'✓':'?')+'</span><span>'+escapeHtml(item.label)+'</span></div>'
+  ).join('');
+}
+function updateParagraphChecklists(pid){
+  const p=paragraphData.find(x=>x.id===pid); if(!p)return;
+  p.cards.forEach((_,i)=>updateSentenceChecklist(pid,i));
+}
+function updateAllChecklists(){paragraphData.forEach(p=>updateParagraphChecklists(p.id));}
+
+function getParagraphText(pid){
+  const p=paragraphData.find(x=>x.id===pid); if(!p)return'';
+  const parts=[];
+  for(let i=0;i<p.cards.length;i++){
+    const el=document.getElementById(pid+'s'+i);
+    if(el && el.value.trim()) parts.push(el.value.trim());
+  }
+  return parts.join(' ');
+}
+function fullPersuasiveText(){
+  const title=safeText('title') || 'Persuasive Writing';
+  const paras=paragraphData.map(p=>getParagraphText(p.id)).filter(Boolean);
+  if(!paras.length){return title + '\n\nStart typing in the paragraph boxes. Your full persuasive text will appear here.';}
+  return title + '\n\n' + paras.join('\n\n');
+}
+function updateFullPreview(){document.getElementById('fullPreview').textContent=fullPersuasiveText();}
+function checkParagraph(pid){
+  const p=paragraphData.find(x=>x.id===pid); const fb=[];
+  p.cards.forEach((c,i)=>{const txt=document.getElementById(pid+'s'+i).value.trim(); fb.push(...checkSentence(txt,i,p.type));});
+  const box=document.getElementById(pid+'fb');
+  box.innerHTML='<strong>Feedback:</strong><ul>'+fb.map(x=>'<li>'+escapeHtml(x)+'</li>').join('')+'</ul>';
+  box.style.display='block';
+}
+function checkSentence(txt,idx,type){
+  const fb=[];
+  if(!txt){fb.push('Sentence '+(idx+1)+': Missing sentence.'); return fb;}
+  if(/^[A-Z]/.test(txt)) fb.push('Sentence '+(idx+1)+': Starts with a capital letter.'); else fb.push('Sentence '+(idx+1)+': Check the capital letter at the start.');
+  if(/[.?!]$/.test(txt)) fb.push('Sentence '+(idx+1)+': Ends with punctuation.'); else fb.push('Sentence '+(idx+1)+': Add end punctuation.');
+  if(txt.split(/\s+/).length<6) fb.push('Sentence '+(idx+1)+': Add more detail.');
+  if((type==='argument1'||type==='argument2'||type==='argument3') && idx===0 && !/firstly|secondly|thirdly/i.test(txt)) fb.push('Sentence 1: Add the time connective for this paragraph.');
+  if((type==='argument1'||type==='argument2'||type==='argument3') && idx===1 && !/because/i.test(txt)) fb.push('Sentence 2: Use because to explain the importance.');
+  if(type==='argument1' && idx===2 && !/[?]$/.test(txt)) fb.push('Sentence 3: Try ending your rhetorical question with a question mark.');
+  if(type==='argument2' && idx===2 && !/tragedy|misfortune|disaster|we|us|our|you|million|forever|life|together/i.test(txt)) fb.push('Sentence 3: Add emotive, inclusive or exaggerated language.');
+  if(type==='argument3' && idx===2 && !/for example|study|according|report|video|website|witnessed|found/i.test(txt)) fb.push('Sentence 3: Add evidence language, such as For example or According to.');
+  if(type==='conclusion' && idx===0 && !/for these reasons|in conclusion|this is why|if we truly care|without our help/i.test(txt)) fb.push('Conclusion: Start with a conclusion phrase.');
+  if(type==='conclusion' && idx===1 && !/we|us|our|together|act now|must|should|tragedy|disaster/i.test(txt)) fb.push('Final sentence: Add inclusive, emotive or high modality language.');
+  if(type==='intro' && idx===1 && !/must/i.test(txt)) fb.push('Sentence 2: Try using You must...');
+  return fb;
+}
+function readParagraph(pid){
+  const text=getParagraphText(pid); if(!text)return;
+  if('speechSynthesis' in window){window.speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(text); u.rate=.92; window.speechSynthesis.speak(u);}
+}
+function copyText(txt){
+  if(navigator.clipboard && window.isSecureContext){return navigator.clipboard.writeText(txt);}
+  const ta=document.createElement('textarea'); ta.value=txt; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta); return Promise.resolve();
+}
+function copyParagraph(pid){const t=getParagraphText(pid); if(!t)return; copyText(t).then(showCopied);}
+function copyFullText(){const t=fullPersuasiveText(); if(!t.trim())return; copyText(t).then(showCopied);}
+function showCopied(){const msg=document.getElementById('copiedMsg'); msg.style.display='block'; setTimeout(()=>msg.style.display='none',1600);}
+function resetParagraph(pid){paragraphData.find(x=>x.id===pid).cards.forEach((_,i)=>document.getElementById(pid+'s'+i).value=''); const fb=document.getElementById(pid+'fb'); fb.style.display='none'; updateFullPreview(); updateParagraphChecklists(pid);}
+function clearStudentWriting(){paragraphData.forEach(p=>resetParagraph(p.id));}
+function fillSentenceStarters(){
+  document.getElementById('p1s0').value='In many places, '+safeText('position').replace(/[.?!]$/,'')+'.';
+  document.getElementById('p1s1').value='You must absolutely recognise that '+safeText('position').replace(/[.?!]$/,'')+'.';
+  document.getElementById('p1s2').value='Read on to discover why and you will understand.';
+  document.getElementById('p2s0').value='Firstly, you must understand that '+safeText('arg1').replace(/[.?!]$/,'')+'.';
+  document.getElementById('p2s1').value='This is important because ';
+  document.getElementById('p2s2').value='Is this really fair?';
+  document.getElementById('p3s0').value='Secondly, you must consider that '+safeText('arg2').replace(/[.?!]$/,'')+'.';
+  document.getElementById('p3s1').value='This is significant because ';
+  document.getElementById('p3s2').value='It is a tragedy that we allow this problem to continue.';
+  document.getElementById('p4s0').value='Thirdly, you must also consider that '+safeText('arg3').replace(/[.?!]$/,'')+'.';
+  document.getElementById('p4s1').value='This is critical because ';
+  document.getElementById('p4s2').value='For example, a recent report showed that ';
+  document.getElementById('p5s0').value='For these reasons, '+safeText('position').replace(/[.?!]$/,'')+'.';
+  document.getElementById('p5s1').value='Together, we must act now before this problem becomes a disaster.';
+  fixAllSpacing(false);
+  updateFullPreview();
+  updateAllChecklists();
+}
+function fixSpacingText(text){
+  let t=String(text);
+  t=t.replace(/\s+([,.;:!?])/g,'$1');
+  t=t.replace(/([,.;:!?])(?=\S)/g,'$1 ');
+  t=t.replace(/\s{2,}/g,' ');
+  t=t.replace(/^\s+|\s+$/g,'');
+  t=t.replace(/(^|[.!?]\s+)([a-z])/g,function(match,punc,letter){return punc+letter.toUpperCase();});
+  t=t.replace(/\bi\b/g,'I');
+  return t;
+}
+function allInputIds(){
+  const ids=[];
+  paragraphData.forEach(p=>p.cards.forEach((_,i)=>ids.push(p.id+'s'+i)));
+  return ids;
+}
+function fixAllSpacing(showMessage=true){
+  allInputIds().forEach(id=>{const el=document.getElementById(id); if(el){el.value=fixSpacingText(el.value);}});
+  updateAll();
+  if(showMessage) showCopiedText('Spacing fixed.');
+}
+function fixParagraphSpacing(pid){
+  const p=paragraphData.find(x=>x.id===pid); if(!p)return;
+  p.cards.forEach((_,i)=>{const el=document.getElementById(pid+'s'+i); el.value=fixSpacingText(el.value);});
+  updateFullPreview();
+  updateParagraphChecklists(pid);
+  showCopiedText('Spacing fixed.');
+}
+function showCopiedText(text){
+  const msg=document.getElementById('copiedMsg');
+  const old=msg.textContent;
+  msg.textContent=text;
+  msg.style.display='block';
+  setTimeout(()=>{msg.style.display='none'; msg.textContent=old;},1600);
+}
+
+renderParagraphs();
+updateAll();
+updateAllChecklists();
+</script>
+</body>
+</html>
