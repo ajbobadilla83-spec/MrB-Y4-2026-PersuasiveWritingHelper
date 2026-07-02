@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Persuasive Writing Helper - Generic Paragraph Scaffold</title>
+<title>Persuasive Writing Helper - Autosave Version</title>
 <style>
   :root{
     --yellow:#fff200;
@@ -98,7 +98,13 @@
   .mini-buttons{display:flex;gap:7px;flex-wrap:wrap;margin-top:8px;}
   .full-section{background:white;border-radius:14px;padding:18px;margin-bottom:26px;box-shadow:0 3px 12px rgba(0,0,0,.08);border:1px solid #d1d5db;}
   .full-preview{white-space:pre-wrap;background:#f9fafb;border:2px solid #d1d5db;border-radius:10px;min-height:230px;padding:14px;font-size:18px;line-height:1.6;max-width:100%;overflow:auto;overflow-wrap:anywhere;word-break:break-word;}
+  .spacing-issue{background:#fde68a;outline:2px solid #f59e0b;border-radius:3px;white-space:pre-wrap;}
+  .missing-space{background:#fecaca;outline:2px solid #ef4444;border-radius:3px;}
+  .spacing-message{display:none;background:#eff6ff;border:2px solid #60a5fa;border-radius:10px;padding:10px;margin:10px 0;font-weight:800;color:#1e3a8a;line-height:1.35;}
   .copied{background:#dcfce7;border:1px solid #86efac;color:#166534;border-radius:8px;padding:8px;margin-top:8px;display:none;font-weight:800;}
+  .save-row{display:flex;gap:8px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-top:10px;}
+  .save-status{font-size:14px;color:#d1fae5;font-weight:800;}
+  .small-danger{background:#991b1b;color:white;font-size:13px;padding:7px 10px;}
   @media(max-width:900px){.setup-grid,.top-prompt-grid,.prompt-grid,.editable-grid,.para-head,.para-body{grid-template-columns:1fr;}.para-title{font-size:30px}.para-num{font-size:38px}.wagll{font-size:19px}.mini-checklist{grid-template-columns:1fr}}
   @media print{body{background:white;padding:0}.hero,.paragraph{box-shadow:none;page-break-inside:avoid}.toolbar,.mini-buttons,.fb,.student-box label{display:none!important}.full-section{box-shadow:none}.paragraph{display:none}.hero{display:none}.full-preview{border:none;background:white;font-size:16pt}}
 </style>
@@ -114,24 +120,28 @@
       <div class="editable-grid">
         <div class="editable-field">
           <label for="teacherTopic">Today&apos;s writing prompt</label>
-          <input id="teacherTopic" placeholder="Type the new prompt here" oninput="updateAll()">
+          <input id="teacherTopic" placeholder="Type the new prompt here" oninput="updateAll(); saveWork()">
         </div>
         <div class="editable-field">
           <label for="teacherTitle">Title / Position</label>
-          <input id="teacherTitle" placeholder="Type the title or position here" oninput="updateAll()">
+          <input id="teacherTitle" placeholder="Type the title or position here" oninput="updateAll(); saveWork()">
         </div>
         <div class="editable-field">
           <label for="teacherArg1">Argument 1</label>
-          <textarea id="teacherArg1" placeholder="Type argument 1 here" oninput="updateAll()"></textarea>
+          <textarea id="teacherArg1" placeholder="Type argument 1 here" oninput="updateAll(); saveWork()"></textarea>
         </div>
         <div class="editable-field">
           <label for="teacherArg2">Argument 2</label>
-          <textarea id="teacherArg2" placeholder="Type argument 2 here" oninput="updateAll()"></textarea>
+          <textarea id="teacherArg2" placeholder="Type argument 2 here" oninput="updateAll(); saveWork()"></textarea>
         </div>
         <div class="editable-field" style="grid-column:1 / -1;">
           <label for="teacherArg3">Argument 3</label>
-          <textarea id="teacherArg3" placeholder="Type argument 3 here" oninput="updateAll()"></textarea>
+          <textarea id="teacherArg3" placeholder="Type argument 3 here" oninput="updateAll(); saveWork()"></textarea>
         </div>
+      </div>
+      <div class="save-row">
+        <span class="save-status" id="saveStatus">Autosave is on.</span>
+        <button class="small-danger" onclick="clearSavedWork()">Clear saved work</button>
       </div>
       </div>
     </div>
@@ -145,6 +155,7 @@
     <div class="toolbar">
       <button class="green" onclick="copyFullText()">Copy full persuasive text with title</button>
     </div>
+    <div class="spacing-message" id="spacingMessage"></div>
     <div class="copied" id="copiedMsg">Copied.</div>
     <h3 style="margin-top:14px;">Live Preview</h3>
     <div class="preview-reminder">
@@ -155,13 +166,14 @@
 </div>
 
 <script>
+let spacingHighlightOn = true;
 const paragraphData = [
   {
     id:"p1", number:"Paragraph 1", title:"Statement of Position", type:"intro",
     wagll:[
-      {text:"In zoos all around the world, animals are trapped in cages and forced to live a miserable existence.", cls:""},
-      {text:"You must absolutely agree that animals deserve the freedom to roam, explore and live naturally.", cls:"green-text"},
-      {text:"Read on to discover why, and you will understand why this must change.", cls:"red-text"}
+      {text:"In zoos all around the world, animals are locked up in cages living a miserable existence.", cls:""},
+      {text:"You must absolutely agree that animals should be allowed to roam free.", cls:"green-text"},
+      {text:"Read on to discover why and you will understand.", cls:"red-text"}
     ],
     cards:[
       {color:"s-yellow", title:"Sentence 1: Where, What", hint:"State where or who the issue affects, then state what your position is.", bank:["In schools...", "In our community...", "Around the world...", "Children...", "Animals...", "People..."], prompt:"Write Sentence 1: Where, What"},
@@ -173,7 +185,7 @@ const paragraphData = [
     id:"p2", number:"Paragraph 2", title:"Argument 1 - Teacher Models", type:"argument1",
     wagll:[
       {text:"Firstly, you must understand that animals are not meant to live in tiny, unnatural enclosures.", cls:""},
-      {text:"This is important because, without the ability to hunt, play and explore, these magnificent creatures can become bored, unhealthy and distressed.", cls:"green-text"},
+      {text:"This is important because without the ability to hunt, play, and explore, these magnificent creatures become bored and unhealthy.", cls:"green-text"},
       {text:"Imagine being locked in your bedroom for your entire life; how would that make you feel?", cls:"blue-text"}
     ],
     cards:[
@@ -185,9 +197,9 @@ const paragraphData = [
   {
     id:"p3", number:"Paragraph 3", title:"Argument 2 - Teacher Models", type:"argument2",
     wagll:[
-      {text:"Secondly, you must consider the mental health of animals that are forced to live in captivity.", cls:""},
-      {text:"This is important because stressed and bored animals can become sick, lonely, frightened and even aggressive.", cls:"green-text"},
-      {text:"It is heartbreaking to see these beautiful animals suffering in plain sight for our entertainment.", cls:"purple-text"}
+      {text:"Secondly, you must consider the mental health of these animals living in captivity.", cls:""},
+      {text:"This is important because animals that are stressed and bored can become sick, sad, and even aggressive.", cls:"green-text"},
+      {text:"It is a tragedy to see these animals suffering in plain sight for our entertainment.", cls:"purple-text"}
     ],
     cards:[
       {color:"s-yellow", title:"Sentence 1: Topic Sentence", hint:"Time connective (Secondly), you must understand/realise/recognise/appreciate that...", bank:["Secondly", "you must consider that", "you must realise that", "you must recognise that", "you must appreciate that"], prompt:"Write Sentence 1: Topic sentence for Argument 2"},
@@ -198,9 +210,9 @@ const paragraphData = [
   {
     id:"p4", number:"Paragraph 4", title:"Argument 3 - Teacher Models", type:"argument3",
     wagll:[
-      {text:"Thirdly, you must also consider that zoos do not truly teach people about natural animal behaviour.", cls:""},
-      {text:"This is important because seeing an animal behind glass does not show how it hunts, moves, communicates or survives in the wild.", cls:"green-text"},
-      {text:"For example, a recent study found that visitors who watched documentaries about wildlife in natural habitats learned more about animal behaviour than visitors at a zoo.", cls:"pink-text"}
+      {text:"Thirdly, you must also consider that zoos do not teach people about animal behaviour.", cls:""},
+      {text:"This is important because seeing an animal behind glass does not show us its true behaviour.", cls:"green-text"},
+      {text:"For example, a recent study found that visitors who watched documentaries about wildlife in their natural homes learned more about animal behaviour than in a zoo.", cls:"pink-text"}
     ],
     cards:[
       {color:"s-yellow", title:"Sentence 1: Topic Sentence", hint:"Time connective (Thirdly), you must understand/realise/recognise/appreciate that...", bank:["Thirdly", "you must also consider that", "you must understand that", "you must recognise that", "you must appreciate that"], prompt:"Write Sentence 1: Topic sentence for Argument 3"},
@@ -211,8 +223,8 @@ const paragraphData = [
   {
     id:"p5", number:"Paragraph 5", title:"Conclusion - Teacher Models", type:"conclusion",
     wagll:[
-      {text:"For these reasons, we must act now to protect animals because they should not be locked up in cages for human entertainment.", cls:""},
-      {text:"Their survival depends on us, so together we can urge our local authorities to create laws that protect animals and support their wellbeing.", cls:"pink-text"}
+      {text:"For these reasons, we must act now to protect animals because they should not be locked up in cages.", cls:""},
+      {text:"Their survival depends on us, so together we can make a world with no zoos.", cls:"pink-text"}
     ],
     cards:[
       {color:"s-yellow", title:"Sentence 1: Conclusion", hint:"For these reasons... / In conclusion... / This is why... / If we truly care... / Without our help... Repeat your initial position from Paragraph 1.", bank:["For these reasons", "In conclusion", "This is why", "If we truly care", "Without our help"], prompt:"Write Sentence 1: Restate your position"},
@@ -229,6 +241,59 @@ const fixedPrompt = {
   arg2: "Captivity can harm animals' mental health.",
   arg3: 'Zoos do not always teach true animal behaviour.'
 };
+const STORAGE_KEY = 'persuasiveWritingHelperGenericV9';
+let saveTimer = null;
+
+function collectWork(){
+  const work = { teacher:{}, sentences:{} };
+  ['teacherTopic','teacherTitle','teacherArg1','teacherArg2','teacherArg3'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el) work.teacher[id]=el.value;
+  });
+  paragraphData.forEach(p=>p.cards.forEach((_,i)=>{
+    const id=p.id+'s'+i;
+    const el=document.getElementById(id);
+    if(el) work.sentences[id]=el.value;
+  }));
+  return work;
+}
+function saveWork(){
+  clearTimeout(saveTimer);
+  saveTimer=setTimeout(()=>{
+    try{
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(collectWork()));
+      const status=document.getElementById('saveStatus');
+      if(status){status.textContent='Saved automatically.';}
+    }catch(e){
+      const status=document.getElementById('saveStatus');
+      if(status){status.textContent='Autosave could not save on this browser.';}
+    }
+  },120);
+}
+function restoreSavedWork(){
+  try{
+    const raw=localStorage.getItem(STORAGE_KEY);
+    if(!raw)return;
+    const work=JSON.parse(raw);
+    Object.keys(work.teacher||{}).forEach(id=>{const el=document.getElementById(id); if(el)el.value=work.teacher[id];});
+    Object.keys(work.sentences||{}).forEach(id=>{const el=document.getElementById(id); if(el)el.value=work.sentences[id];});
+    const status=document.getElementById('saveStatus');
+    if(status){status.textContent='Saved work restored.';}
+  }catch(e){
+    const status=document.getElementById('saveStatus');
+    if(status){status.textContent='Saved work could not be restored.';}
+  }
+}
+function clearSavedWork(){
+  if(!confirm('Clear the saved writing on this device?')) return;
+  try{localStorage.removeItem(STORAGE_KEY);}catch(e){}
+  ['teacherTopic','teacherTitle','teacherArg1','teacherArg2','teacherArg3'].forEach(id=>{const el=document.getElementById(id); if(el)el.value='';});
+  paragraphData.forEach(p=>p.cards.forEach((_,i)=>{const el=document.getElementById(p.id+'s'+i); if(el)el.value='';}));
+  updateAll();
+  const status=document.getElementById('saveStatus');
+  if(status){status.textContent='Saved work cleared.';}
+}
+
 function editableText(id){const el=document.getElementById(id); return el ? el.value.trim() : '';}
 function safeText(id){
   const map={topic:'teacherTopic',title:'teacherTitle',position:'teacherTitle',arg1:'teacherArg1',arg2:'teacherArg2',arg3:'teacherArg3'};
@@ -260,7 +325,7 @@ function renderParagraphs(){
         <div class="word-bank">${c.bank.map(word=>`<span class="word">${escapeHtml(word)}</span>`).join('')}</div>
         <div class="student-box">
           <label for="${p.id}s${si}">${escapeHtml(c.prompt)}</label>
-          <textarea id="${p.id}s${si}" oninput="updateFullPreview(); updateSentenceChecklist('${p.id}', ${si})"></textarea>
+          <textarea id="${p.id}s${si}" oninput="updateFullPreview(); updateSentenceChecklist('${p.id}', ${si}); saveWork()"></textarea>
           <div class="mini-checklist" id="${p.id}s${si}Checks"></div>
         </div>
       </div>`).join('');
@@ -321,7 +386,53 @@ function fullPersuasiveText(){
   if(!paras.length){return title + '\n\nStart typing in the paragraph boxes. Your full persuasive text will appear here.';}
   return title + '\n\n' + paras.join('\n\n');
 }
-function updateFullPreview(){document.getElementById('fullPreview').textContent=fullPersuasiveText();}
+function updateFullPreview(){renderFullPreview();}
+function renderFullPreview(){
+  const preview=document.getElementById('fullPreview');
+  const text=fullPersuasiveText();
+  if(!preview) return;
+
+  const result=highlightSpacingIssues(text);
+  preview.innerHTML=result.html;
+
+  const msg=document.getElementById('spacingMessage');
+  if(msg){
+    msg.style.display='block';
+    msg.innerHTML = result.count ?
+      '<strong>Spacing reminder:</strong> I found <strong>'+result.count+'</strong> possible spacing issue'+(result.count===1?'':'s')+'. Yellow shows extra spaces or spaces before punctuation. Red shows punctuation that may need a space after it. Go back to the sentence boxes above and fix the highlighted parts yourself before copying.' :
+      '<strong>Spacing reminder:</strong> No obvious spacing issues found. Still reread your work to check full stops, commas and capital letters.';
+  }
+}
+function highlightSpacingIssues(text){
+  let html='';
+  let count=0;
+  const punct=',.;:!?';
+  for(let i=0;i<text.length;i++){
+    const ch=text[i];
+    const next=text[i+1] || '';
+    if(ch===' '){
+      let j=i;
+      while(text[j]===' ') j++;
+      const spaces=text.slice(i,j);
+      const after=text[j] || '';
+      if(spaces.length>1 || punct.includes(after)){
+        html += '<span class="spacing-issue">'+escapeHtml(spaces)+'</span>';
+        count++;
+      } else {
+        html += escapeHtml(spaces);
+      }
+      i=j-1;
+      continue;
+    }
+    if(punct.includes(ch) && next && !/\s/.test(next) && !punct.includes(next) && next!==')' && next!==']' && next!=='”' && next!=='"' && next!=="'"){
+      html += '<span class="missing-space">'+escapeHtml(ch)+'</span>';
+      count++;
+      continue;
+    }
+    html += escapeHtml(ch);
+  }
+  return {html:html,count:count};
+}
 function checkParagraph(pid){
   const p=paragraphData.find(x=>x.id===pid); const fb=[];
   p.cards.forEach((c,i)=>{const txt=document.getElementById(pid+'s'+i).value.trim(); fb.push(...checkSentence(txt,i,p.type));});
@@ -345,9 +456,25 @@ function checkSentence(txt,idx,type){
   if(type==='intro' && idx===1 && !/must/i.test(txt)) fb.push('Sentence 2: Try using You must...');
   return fb;
 }
+function speakText(text){
+  if(!text || !text.trim()){
+    alert('There is no text to read yet.');
+    return;
+  }
+  if(!('speechSynthesis' in window) || typeof SpeechSynthesisUtterance === 'undefined'){
+    alert('Read aloud is not supported in this browser. Try opening the page in Chrome or Edge.');
+    return;
+  }
+  window.speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(text);
+  u.lang='en-AU';
+  u.rate=.9;
+  u.pitch=1;
+  u.onerror=function(){alert('Read aloud could not start. Check that sound is on, or try Chrome or Edge.');};
+  window.speechSynthesis.speak(u);
+}
 function readParagraph(pid){
-  const text=getParagraphText(pid); if(!text)return;
-  if('speechSynthesis' in window){window.speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(text); u.rate=.92; window.speechSynthesis.speak(u);}
+  speakText(getParagraphText(pid));
 }
 function copyText(txt){
   if(navigator.clipboard && window.isSecureContext){return navigator.clipboard.writeText(txt);}
@@ -356,7 +483,7 @@ function copyText(txt){
 function copyParagraph(pid){const t=getParagraphText(pid); if(!t)return; copyText(t).then(showCopied);}
 function copyFullText(){const t=fullPersuasiveText(); if(!t.trim())return; copyText(t).then(showCopied);}
 function showCopied(){const msg=document.getElementById('copiedMsg'); msg.style.display='block'; setTimeout(()=>msg.style.display='none',1600);}
-function resetParagraph(pid){paragraphData.find(x=>x.id===pid).cards.forEach((_,i)=>document.getElementById(pid+'s'+i).value=''); const fb=document.getElementById(pid+'fb'); fb.style.display='none'; updateFullPreview(); updateParagraphChecklists(pid);}
+function resetParagraph(pid){paragraphData.find(x=>x.id===pid).cards.forEach((_,i)=>document.getElementById(pid+'s'+i).value=''); const fb=document.getElementById(pid+'fb'); if(fb){fb.style.display='none';} updateFullPreview(); updateParagraphChecklists(pid); saveWork();}
 function clearStudentWriting(){paragraphData.forEach(p=>resetParagraph(p.id));}
 function fillSentenceStarters(){
   document.getElementById('p1s0').value='In many places, '+safeText('position').replace(/[.?!]$/,'')+'.';
@@ -376,6 +503,7 @@ function fillSentenceStarters(){
   fixAllSpacing(false);
   updateFullPreview();
   updateAllChecklists();
+  saveWork();
 }
 function fixSpacingText(text){
   let t=String(text);
@@ -395,6 +523,7 @@ function allInputIds(){
 function fixAllSpacing(showMessage=true){
   allInputIds().forEach(id=>{const el=document.getElementById(id); if(el){el.value=fixSpacingText(el.value);}});
   updateAll();
+  saveWork();
   if(showMessage) showCopiedText('Spacing fixed.');
 }
 function fixParagraphSpacing(pid){
@@ -402,6 +531,7 @@ function fixParagraphSpacing(pid){
   p.cards.forEach((_,i)=>{const el=document.getElementById(pid+'s'+i); el.value=fixSpacingText(el.value);});
   updateFullPreview();
   updateParagraphChecklists(pid);
+  saveWork();
   showCopiedText('Spacing fixed.');
 }
 function showCopiedText(text){
@@ -413,6 +543,7 @@ function showCopiedText(text){
 }
 
 renderParagraphs();
+restoreSavedWork();
 updateAll();
 updateAllChecklists();
 </script>
