@@ -84,6 +84,12 @@
   .word{background:rgba(255,255,255,.72);border:1px solid rgba(0,0,0,.12);padding:5px 8px;border-radius:6px;font-size:15px;font-weight:700;}
   .student-box{background:white;border-radius:8px;padding:10px;border:2px solid rgba(0,0,0,.16);}
   .student-box textarea{font-size:18px;min-height:72px;border:2px solid #9ca3af;}
+  .sentence-spacing-note{background:#eff6ff;border:2px solid #60a5fa;border-radius:8px;padding:8px;margin-top:8px;font-size:14px;line-height:1.35;font-weight:800;color:#1e3a8a;}
+  .sentence-spacing-preview{background:white;border:2px dashed #94a3b8;border-radius:8px;padding:8px;margin-top:6px;font-size:16px;line-height:1.45;min-height:36px;white-space:pre-wrap;overflow-wrap:anywhere;word-break:break-word;}
+  .sentence-spacing-preview.ok{background:#dcfce7;border-color:#22c55e;color:#166534;font-weight:800;}
+  .sentence-spacing-preview.empty{background:#f8fafc;color:#64748b;font-style:italic;}
+  .leading-space,.extra-space,.space-before-punctuation{background:#fde68a;outline:2px solid #f59e0b;border-radius:3px;white-space:pre-wrap;}
+  .missing-space-after-punctuation{background:#fecaca;outline:2px solid #ef4444;border-radius:3px;}
   .fb{background:#f9fafb;border:1px solid #d1d5db;border-radius:8px;padding:8px 10px;margin-top:8px;font-size:15px;line-height:1.35;display:none;}
   .fb ul{margin:4px 0 0 18px;padding:0;}
   .checklist{background:#f9fafb;border:2px solid #d1d5db;border-radius:10px;padding:10px;margin-top:10px;}
@@ -155,12 +161,8 @@
     <div class="toolbar">
       <button class="green" onclick="copyFullText()">Copy full persuasive text with title</button>
     </div>
-    <div class="spacing-message" id="spacingMessage"></div>
     <div class="copied" id="copiedMsg">Copied.</div>
     <h3 style="margin-top:14px;">Live Preview</h3>
-    <div class="preview-reminder">
-      <strong>Before copying:</strong> check spacing after full stops and commas. Also check that sentences are not run-on sentences. If a sentence has too many ideas joined with <em>and</em>, split it into two sentences or use a clearer conjunction such as <em>because</em>, <em>so</em>, <em>but</em>, <em>although</em> or <em>however</em>.
-    </div>
     <div class="full-preview" id="fullPreview"></div>
   </section>
 </div>
@@ -300,7 +302,7 @@ function safeText(id){
   const custom=map[id] ? editableText(map[id]) : '';
   return custom || fixedPrompt[id] || '';
 }
-function updateAll(){renderPromptSummary();updateFullPreview();updateAllChecklists();}
+function updateAll(){renderPromptSummary();updateFullPreview();updateAllChecklists();updateAllSentenceSpacingPreviews();}
 function renderPromptSummary(){
   document.getElementById('promptSummary').innerHTML = `
     <div class="main-prompt"><span class="summary-title">Today&apos;s writing prompt:</span> ${escapeHtml(fixedPrompt.topic)}</div>
@@ -325,8 +327,10 @@ function renderParagraphs(){
         <div class="word-bank">${c.bank.map(word=>`<span class="word">${escapeHtml(word)}</span>`).join('')}</div>
         <div class="student-box">
           <label for="${p.id}s${si}">${escapeHtml(c.prompt)}</label>
-          <textarea id="${p.id}s${si}" oninput="updateFullPreview(); updateSentenceChecklist('${p.id}', ${si}); saveWork()"></textarea>
+          <textarea id="${p.id}s${si}" oninput="updateSentenceBox('${p.id}', ${si}); saveWork()"></textarea>
           <div class="mini-checklist" id="${p.id}s${si}Checks"></div>
+          <div class="sentence-spacing-note">Spacing check: yellow = extra space or space before punctuation. Red = punctuation needs a space after it. Fix it in the writing box above.</div>
+          <div class="sentence-spacing-preview empty" id="${p.id}s${si}Spacing">Start typing to check spacing.</div>
         </div>
       </div>`).join('');
     section.innerHTML = `
@@ -347,6 +351,31 @@ function renderParagraphs(){
       </div>`;
     holder.appendChild(section);
   });
+}
+
+function updateSentenceBox(pid, si){
+  updateFullPreview();
+  updateSentenceChecklist(pid, si);
+  updateSentenceSpacingPreview(pid, si);
+}
+function updateSentenceSpacingPreview(pid, si){
+  const el=document.getElementById(pid+'s'+si);
+  const box=document.getElementById(pid+'s'+si+'Spacing');
+  if(!el || !box) return;
+  const result=highlightSentenceSpacingIssues(el.value);
+  box.className='sentence-spacing-preview';
+  if(!el.value){
+    box.className='sentence-spacing-preview empty';
+    box.textContent='Start typing to check spacing.';
+  } else if(result.count===0){
+    box.className='sentence-spacing-preview ok';
+    box.textContent='✓ No obvious spacing issues found.';
+  } else {
+    box.innerHTML=result.html;
+  }
+}
+function updateAllSentenceSpacingPreviews(){
+  paragraphData.forEach(p=>p.cards.forEach((_,i)=>updateSentenceSpacingPreview(p.id,i)));
 }
 
 function updateSentenceChecklist(pid, si){
@@ -391,17 +420,7 @@ function renderFullPreview(){
   const preview=document.getElementById('fullPreview');
   const text=fullPersuasiveText();
   if(!preview) return;
-
-  const result=highlightSpacingIssues(text);
-  preview.innerHTML=result.html;
-
-  const msg=document.getElementById('spacingMessage');
-  if(msg){
-    msg.style.display='block';
-    msg.innerHTML = result.count ?
-      '<strong>Spacing reminder:</strong> I found <strong>'+result.count+'</strong> possible spacing issue'+(result.count===1?'':'s')+'. Yellow shows extra spaces or spaces before punctuation. Red shows punctuation that may need a space after it. Go back to the sentence boxes above and fix the highlighted parts yourself before copying.' :
-      '<strong>Spacing reminder:</strong> No obvious spacing issues found. Still reread your work to check full stops, commas and capital letters.';
-  }
+  preview.textContent=text;
 }
 function highlightSpacingIssues(text){
   let html='';
@@ -433,6 +452,43 @@ function highlightSpacingIssues(text){
   }
   return {html:html,count:count};
 }
+function highlightSentenceSpacingIssues(text){
+  let html='';
+  let count=0;
+  const punct=',.;:!?';
+  for(let i=0;i<text.length;i++){
+    const ch=text[i];
+    const next=text[i+1] || '';
+    if(ch===' '){
+      let j=i;
+      while(text[j]===' ') j++;
+      const spaces=text.slice(i,j);
+      const after=text[j] || '';
+      if(i===0){
+        html += '<span class="leading-space">'+escapeHtml(spaces)+'</span>';
+        count++;
+      } else if(spaces.length>1){
+        html += '<span class="extra-space">'+escapeHtml(spaces)+'</span>';
+        count++;
+      } else if(punct.includes(after)){
+        html += '<span class="space-before-punctuation">'+escapeHtml(spaces)+'</span>';
+        count++;
+      } else {
+        html += escapeHtml(spaces);
+      }
+      i=j-1;
+      continue;
+    }
+    if(punct.includes(ch) && next && !/\s/.test(next) && !punct.includes(next) && next!==')' && next!==']' && next!=='”' && next!=='"' && next!=="'"){
+      html += '<span class="missing-space-after-punctuation">'+escapeHtml(ch)+'</span>';
+      count++;
+      continue;
+    }
+    html += escapeHtml(ch);
+  }
+  return {html:html,count:count};
+}
+
 function checkParagraph(pid){
   const p=paragraphData.find(x=>x.id===pid); const fb=[];
   p.cards.forEach((c,i)=>{const txt=document.getElementById(pid+'s'+i).value.trim(); fb.push(...checkSentence(txt,i,p.type));});
@@ -483,7 +539,7 @@ function copyText(txt){
 function copyParagraph(pid){const t=getParagraphText(pid); if(!t)return; copyText(t).then(showCopied);}
 function copyFullText(){const t=fullPersuasiveText(); if(!t.trim())return; copyText(t).then(showCopied);}
 function showCopied(){const msg=document.getElementById('copiedMsg'); msg.style.display='block'; setTimeout(()=>msg.style.display='none',1600);}
-function resetParagraph(pid){paragraphData.find(x=>x.id===pid).cards.forEach((_,i)=>document.getElementById(pid+'s'+i).value=''); const fb=document.getElementById(pid+'fb'); if(fb){fb.style.display='none';} updateFullPreview(); updateParagraphChecklists(pid); saveWork();}
+function resetParagraph(pid){paragraphData.find(x=>x.id===pid).cards.forEach((_,i)=>document.getElementById(pid+'s'+i).value=''); const fb=document.getElementById(pid+'fb'); if(fb){fb.style.display='none';} updateFullPreview(); updateParagraphChecklists(pid); p.cards.forEach((_,i)=>updateSentenceSpacingPreview(pid,i)); saveWork();}
 function clearStudentWriting(){paragraphData.forEach(p=>resetParagraph(p.id));}
 function fillSentenceStarters(){
   document.getElementById('p1s0').value='In many places, '+safeText('position').replace(/[.?!]$/,'')+'.';
